@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System.Reflection;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Web;
+using Onova;
+using Onova.Services;
 
 namespace AutoCheckin
 {
@@ -19,6 +17,7 @@ namespace AutoCheckin
         public Form1()
         {
             InitializeComponent();
+            label_ver.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString(2);
         }
 
         WebClient client = new WebClient();
@@ -70,7 +69,7 @@ namespace AutoCheckin
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            /////
+            AutoUpdate();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -134,6 +133,17 @@ namespace AutoCheckin
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             notifyIcon1.Visible = false;
+        }
+
+        async void AutoUpdate()
+        {
+            using (var manager = new UpdateManager(
+                new GithubPackageResolver("Nero-X", "KubSAUAutoCheckin", "AutoCheckin*.zip"),
+                new ZipPackageExtractor()))
+            {
+                // Check for new version and, if available, perform full update and restart
+                await manager.CheckPerformUpdateAsync();
+            }
         }
     }
 

@@ -36,6 +36,7 @@
             this.button_Clear = new System.Windows.Forms.Button();
             this.button_Start = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.label_ver = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -77,7 +78,7 @@
             // 
             // button_Start
             // 
-            this.button_Start.Location = new System.Drawing.Point(83, 120);
+            this.button_Start.Location = new System.Drawing.Point(83, 115);
             this.button_Start.Name = "button_Start";
             this.button_Start.Size = new System.Drawing.Size(75, 23);
             this.button_Start.TabIndex = 3;
@@ -90,11 +91,22 @@
             this.timer1.Interval = 1800000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // label_ver
+            // 
+            this.label_ver.AutoSize = true;
+            this.label_ver.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.label_ver.Location = new System.Drawing.Point(12, 141);
+            this.label_ver.Name = "label_ver";
+            this.label_ver.Size = new System.Drawing.Size(22, 13);
+            this.label_ver.TabIndex = 4;
+            this.label_ver.Text = "1.0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(240, 163);
+            this.Controls.Add(this.label_ver);
             this.Controls.Add(this.button_Start);
             this.Controls.Add(this.button_Clear);
             this.Controls.Add(this.textBox_Cookie);
@@ -120,6 +132,7 @@
         private System.Windows.Forms.Button button_Clear;
         private System.Windows.Forms.Button button_Start;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label label_ver;
     }
 }
 
