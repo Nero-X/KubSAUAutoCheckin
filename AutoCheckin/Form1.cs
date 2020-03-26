@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Web;
 
 namespace AutoCheckin
 {
@@ -38,14 +39,26 @@ namespace AutoCheckin
                     return;
                 }
 
+                button_Start.Enabled = false;
                 client.Headers.Add(HttpRequestHeader.Cookie, ".AspNet.ApplicationCookie=" + textBox_Cookie.Text);
-                int week = Convert.ToInt32(client.UploadString("https://stud.kubsau.ru/Home/GetCurrentWeekNumber", "").Substring(8, 1));
+                int week;
+                try
+                {
+                    week = Convert.ToInt32(client.UploadString("https://stud.kubsau.ru/Home/GetCurrentWeekNumber", "").Substring(8, 1));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Проверьте куки\n" + ex.Message, "Ошибка");
+                    button_Start.Enabled = true;
+                    return;
+                }
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
                 string resp = client.UploadString("https://stud.kubsau.ru/Home/GetSchedule", "week=" + week);
                 schedule = JsonConvert.DeserializeObject<Schedule>(Decode(resp));
 
                 tryCheck();
                 timer1.Start();
+                button_Start.Enabled = true;
                 button_Start.Text = "Стоп";
             }
             else
@@ -64,13 +77,8 @@ namespace AutoCheckin
         {
             if (FormWindowState.Minimized == this.WindowState)
             {
-                //notifyIcon1.Visible = true;
                 notifyIcon1.ShowBalloonTip(500);
                 this.Hide();
-            }
-            else if (FormWindowState.Normal == this.WindowState)
-            {
-                //notifyIcon1.Visible = false;
             }
         }
 
@@ -91,9 +99,11 @@ namespace AutoCheckin
             {
                 Pair current = schedule.model[0].GetCurrentPair();
                 if (current == null) return;
-                string resp = client.DownloadString($"https://stud.kubsau.ru/Home/Checkin?disciplineName={current.DisciplineName}&classNumber=" + current.LessonNumber);
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+                string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", $"disciplineName={HttpUtility.UrlEncode(current.DisciplineName)}&classNumber=" + current.LessonNumber);
                 string name = Decode(FindSubstring(resp, "<p class=\"navbar-nav ml-auto\">", "</p>"));
                 if (name != "-1") notifyIcon1.ShowBalloonTip(1000, this.Text, $"{name} посетил пару №{ current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
+                else MessageBox.Show("Проверьте куки", "Ошибка");
             }
             catch (WebException ex)
             {
@@ -120,8 +130,14 @@ namespace AutoCheckin
             if (startIndex >= 0 && endIndex >= 0) return text.Substring(startIndex + start.Length, endIndex - startIndex - start.Length);
             else return "-1";
         }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            notifyIcon1.Visible = false;
+        }
     }
 
+    #region JSON Parser classes
     public class Pair
     {
         public string DisciplineName { get; set; }
@@ -150,4 +166,5 @@ namespace AutoCheckin
     {
         public List<Model> model { get; set; }
     }
+    #endregion
 }
