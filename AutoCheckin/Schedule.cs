@@ -9,6 +9,8 @@ namespace AutoCheckin
         [JsonProperty("model")]
         public List<Day> Days { get; set; }
 
+        public Day Today => Days.Find(x => x.IsToday);
+
         public static Schedule FromJson(string json) => JsonConvert.DeserializeObject<Schedule>(json);
     }
 
@@ -26,6 +28,7 @@ namespace AutoCheckin
     public class Day
     {
         public List<Pair> Pairs { get; set; }
+        public bool IsToday { get; set; }
 
         public Pair GetCurrentPair()
         {

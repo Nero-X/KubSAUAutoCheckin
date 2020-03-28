@@ -35,12 +35,12 @@ namespace AutoCheckin
                 student = new Student(textBox_Cookie.Text);
                 if (student.Schedule != null)
                 {
-                    student.TryCheckin(notifyIcon1);
+                    student.Checkin(notifyIcon1);
                     timer1.Start();
                     button_Start.Enabled = true;
                     button_Start.Text = "Стоп";
                 }
-                else 
+                else { }
             }
             else
             {
@@ -78,7 +78,7 @@ namespace AutoCheckin
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            student.TryCheckinAsync(notifyIcon1);
+            student.CheckinAsync(notifyIcon1);
         }
 
         async void AutoUpdate()

@@ -32,11 +32,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox_Cookie = new System.Windows.Forms.TextBox();
             this.button_Clear = new System.Windows.Forms.Button();
             this.button_Start = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_ver = new System.Windows.Forms.Label();
+            this.textBox_Cookie = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -56,15 +56,6 @@
             this.label1.Size = new System.Drawing.Size(133, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = ".AspNet.ApplicationCookie";
-            // 
-            // textBox_Cookie
-            // 
-            this.textBox_Cookie.Location = new System.Drawing.Point(12, 51);
-            this.textBox_Cookie.Multiline = true;
-            this.textBox_Cookie.Name = "textBox_Cookie";
-            this.textBox_Cookie.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Cookie.Size = new System.Drawing.Size(216, 47);
-            this.textBox_Cookie.TabIndex = 1;
             // 
             // button_Clear
             // 
@@ -101,6 +92,15 @@
             this.label_ver.TabIndex = 4;
             this.label_ver.Text = "1.0";
             // 
+            // textBox_Cookie
+            // 
+            this.textBox_Cookie.Location = new System.Drawing.Point(12, 51);
+            this.textBox_Cookie.Multiline = true;
+            this.textBox_Cookie.Name = "textBox_Cookie";
+            this.textBox_Cookie.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox_Cookie.Size = new System.Drawing.Size(216, 47);
+            this.textBox_Cookie.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -128,11 +128,11 @@
 
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox_Cookie;
         private System.Windows.Forms.Button button_Clear;
         private System.Windows.Forms.Button button_Start;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label_ver;
+        private System.Windows.Forms.TextBox textBox_Cookie;
     }
 }
 

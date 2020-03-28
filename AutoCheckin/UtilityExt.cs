@@ -20,20 +20,5 @@ namespace AutoCheckin
             if (startIndex >= 0 && endIndex >= 0) return text.Substring(startIndex + start.Length, endIndex - startIndex - start.Length);
             else return "-1";
         }
-
-        /*public static string UploadString(this HttpWebRequest request, string data)
-        {
-            byte[] byteArray = Encoding.UTF8.GetBytes(data);
-            using (Stream dataStream = request.GetRequestStream())
-            {
-                dataStream.Write(byteArray, 0, byteArray.Length);
-            }
-            WebResponse response = request.GetResponse();
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }*/
     }
 }
