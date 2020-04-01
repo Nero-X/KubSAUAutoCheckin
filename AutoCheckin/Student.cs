@@ -16,15 +16,6 @@ namespace AutoCheckin
             Cookie = cookie;
             WebClient = new WebClient();
             WebClient.Headers.Add(HttpRequestHeader.Cookie, ".AspNet.ApplicationCookie=" + Cookie);
-            GetSchedule();
-        }
-
-        public async void GetScheduleAsync()
-        {
-            int week = Convert.ToInt32((await WebClient.UploadStringTaskAsync("https://stud.kubsau.ru/Home/GetCurrentWeekNumber", "")).Substring(8, 1));
-            WebClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-            string resp = await WebClient.UploadStringTaskAsync("https://stud.kubsau.ru/Home/GetSchedule", "week=" + week);
-            Schedule = Schedule.FromJson(resp.Decode());
         }
 
         public void GetSchedule()
@@ -37,13 +28,21 @@ namespace AutoCheckin
 
         public void Checkin(NotifyIcon notifyIcon)
         {
-            Pair current = Schedule.Today.GetCurrentPair();
+            Pair current = Schedule.Today?.GetCurrentPair();
             if (current == null || current.CheckedAtLesson == true) return;
             WebClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
             string resp = WebClient.UploadString("https://stud.kubsau.ru/Home/Checkin", $"disciplineName={HttpUtility.UrlEncode(current.DisciplineName)}&classNumber=" + current.LessonNumber);
             string name = resp.FindSubstring("<p class=\"navbar-nav ml-auto\">", "</p>").Decode();
             if (name != "-1") notifyIcon.ShowBalloonTip(1000, "Autocheckin", $"{name} посетил пару №{current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
-            else MessageBox.Show("Проверьте куки (неправильно введены или истёк срок действия)", "Ошибка");
+            else throw new Exception();
+        }
+
+        public async void GetScheduleAsync()
+        {
+            int week = Convert.ToInt32((await WebClient.UploadStringTaskAsync("https://stud.kubsau.ru/Home/GetCurrentWeekNumber", "")).Substring(8, 1));
+            WebClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+            string resp = await WebClient.UploadStringTaskAsync("https://stud.kubsau.ru/Home/GetSchedule", "week=" + week);
+            Schedule = Schedule.FromJson(resp.Decode());
         }
 
         public async void CheckinAsync(NotifyIcon notifyIcon)
@@ -54,16 +53,7 @@ namespace AutoCheckin
             string resp = await WebClient.UploadStringTaskAsync("https://stud.kubsau.ru/Home/Checkin", $"disciplineName={HttpUtility.UrlEncode(current.DisciplineName)}&classNumber=" + current.LessonNumber);
             string name = resp.FindSubstring("<p class=\"navbar-nav ml-auto\">", "</p>").Decode();
             if (name != "-1") notifyIcon.ShowBalloonTip(1000, "Autocheckin", $"{name} посетил пару №{current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
-            else MessageBox.Show("Проверьте куки (неправильно введены или истёк срок действия)", "Ошибка");
+            else throw new Exception();
         }
-        /*catch (WebException ex)
-        {
-            HttpWebResponse resp = (HttpWebResponse)ex.Response;
-            MessageBox.Show(Convert.ToString((int)resp.StatusCode), resp.StatusDescription);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Проверьте куки (неправильно введены или истёк срок действия)", ex.Message);
-        }*/
     }
 }

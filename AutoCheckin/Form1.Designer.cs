@@ -31,12 +31,16 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.button_Clear = new System.Windows.Forms.Button();
-            this.button_Start = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_ver = new System.Windows.Forms.Label();
-            this.textBox_Cookie = new System.Windows.Forms.TextBox();
+            this.dgv = new System.Windows.Forms.DataGridView();
+            this.button_stopAll = new System.Windows.Forms.Button();
+            this.button_startAll = new System.Windows.Forms.Button();
+            this.cookie = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -48,35 +52,6 @@
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 26);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(133, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = ".AspNet.ApplicationCookie";
-            // 
-            // button_Clear
-            // 
-            this.button_Clear.Location = new System.Drawing.Point(161, 21);
-            this.button_Clear.Name = "button_Clear";
-            this.button_Clear.Size = new System.Drawing.Size(67, 23);
-            this.button_Clear.TabIndex = 2;
-            this.button_Clear.Text = "Очистить";
-            this.button_Clear.UseVisualStyleBackColor = true;
-            this.button_Clear.Click += new System.EventHandler(this.button_Clear_Click);
-            // 
-            // button_Start
-            // 
-            this.button_Start.Location = new System.Drawing.Point(83, 115);
-            this.button_Start.Name = "button_Start";
-            this.button_Start.Size = new System.Drawing.Size(75, 23);
-            this.button_Start.TabIndex = 3;
-            this.button_Start.Text = "Старт";
-            this.button_Start.UseVisualStyleBackColor = true;
-            this.button_Start.Click += new System.EventHandler(this.button_Start_Click);
-            // 
             // timer1
             // 
             this.timer1.Interval = 1800000;
@@ -86,31 +61,86 @@
             // 
             this.label_ver.AutoSize = true;
             this.label_ver.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label_ver.Location = new System.Drawing.Point(12, 141);
+            this.label_ver.Location = new System.Drawing.Point(12, 191);
             this.label_ver.Name = "label_ver";
             this.label_ver.Size = new System.Drawing.Size(22, 13);
             this.label_ver.TabIndex = 4;
             this.label_ver.Text = "1.0";
             // 
-            // textBox_Cookie
+            // dgv
             // 
-            this.textBox_Cookie.Location = new System.Drawing.Point(12, 51);
-            this.textBox_Cookie.Multiline = true;
-            this.textBox_Cookie.Name = "textBox_Cookie";
-            this.textBox_Cookie.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Cookie.Size = new System.Drawing.Size(216, 47);
-            this.textBox_Cookie.TabIndex = 1;
+            this.dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cookie,
+            this.name,
+            this.button,
+            this.status});
+            this.dgv.Location = new System.Drawing.Point(12, 12);
+            this.dgv.Name = "dgv";
+            this.dgv.Size = new System.Drawing.Size(452, 150);
+            this.dgv.TabIndex = 5;
+            this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
+            this.dgv.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserAddedRow);
+            this.dgv.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserDeletedRow);
+            // 
+            // button_stopAll
+            // 
+            this.button_stopAll.Location = new System.Drawing.Point(362, 178);
+            this.button_stopAll.Name = "button_stopAll";
+            this.button_stopAll.Size = new System.Drawing.Size(102, 23);
+            this.button_stopAll.TabIndex = 6;
+            this.button_stopAll.Text = "Остановить всех";
+            this.button_stopAll.UseVisualStyleBackColor = true;
+            this.button_stopAll.Click += new System.EventHandler(this.button_stopAll_Click);
+            // 
+            // button_startAll
+            // 
+            this.button_startAll.Location = new System.Drawing.Point(253, 178);
+            this.button_startAll.Name = "button_startAll";
+            this.button_startAll.Size = new System.Drawing.Size(103, 23);
+            this.button_startAll.TabIndex = 7;
+            this.button_startAll.Text = "Стартовать всех";
+            this.button_startAll.UseVisualStyleBackColor = true;
+            this.button_startAll.Click += new System.EventHandler(this.button_startAll_Click);
+            // 
+            // cookie
+            // 
+            this.cookie.HeaderText = ".AspNet.ApplicationCookie";
+            this.cookie.Name = "cookie";
+            this.cookie.Width = 150;
+            // 
+            // name
+            // 
+            this.name.HeaderText = "ФИО";
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            this.name.Width = 113;
+            // 
+            // button
+            // 
+            this.button.HeaderText = "Старт";
+            this.button.Name = "button";
+            this.button.Text = "";
+            this.button.Width = 63;
+            // 
+            // status
+            // 
+            this.status.HeaderText = "Статус";
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
+            this.status.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.status.Width = 65;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(240, 163);
+            this.ClientSize = new System.Drawing.Size(476, 213);
+            this.Controls.Add(this.button_startAll);
+            this.Controls.Add(this.button_stopAll);
+            this.Controls.Add(this.dgv);
             this.Controls.Add(this.label_ver);
-            this.Controls.Add(this.button_Start);
-            this.Controls.Add(this.button_Clear);
-            this.Controls.Add(this.textBox_Cookie);
-            this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -119,6 +149,7 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -127,12 +158,15 @@
         #endregion
 
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button_Clear;
-        private System.Windows.Forms.Button button_Start;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label_ver;
-        private System.Windows.Forms.TextBox textBox_Cookie;
+        private System.Windows.Forms.DataGridView dgv;
+        private System.Windows.Forms.Button button_stopAll;
+        private System.Windows.Forms.Button button_startAll;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cookie;
+        private System.Windows.Forms.DataGridViewTextBoxColumn name;
+        private System.Windows.Forms.DataGridViewButtonColumn button;
+        private System.Windows.Forms.DataGridViewTextBoxColumn status;
     }
 }
 
