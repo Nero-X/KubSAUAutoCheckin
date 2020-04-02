@@ -39,7 +39,7 @@ namespace AutoCheckin
                 using (var sr = File.OpenText("cookies.txt"))
                     while (sr.EndOfStream == false)
                     {
-                        dgv.Rows.Add(sr.ReadLine());
+                        dgv.Rows.Add(sr.ReadLine(), "", "Старт");
                     }
             }
         }
@@ -80,7 +80,7 @@ namespace AutoCheckin
 
         async void CheckinAsync(Student student) // TODO: Сообщения преподавателям
         {
-            var rowIndex = dgv.Rows.Cast<DataGridViewRow>().Where(x => x.Cells["cookie"].Value as string == student.Cookie).FirstOrDefault().Index;
+            var rowIndex = ToDGVRowIndex(student);
             SetStatus(rowIndex, Status.Загрузка);
             try
             {
@@ -98,6 +98,11 @@ namespace AutoCheckin
                 students.Remove(student);
                 SetStatus(rowIndex, Status.Ошибка, "Неправильно введены или истёк срок действия куки");
             }
+        }
+
+        int ToDGVRowIndex(Student student)
+        {
+            return dgv.Rows.Cast<DataGridViewRow>().Where(x => x.Cells["cookie"].Value as string == student.Cookie).FirstOrDefault().Index;
         }
 
         async void AutoUpdate()
@@ -139,9 +144,19 @@ namespace AutoCheckin
         {
             if (dgv.Columns[e.ColumnIndex] is DataGridViewButtonColumn && e.RowIndex >= 0)
             {
-                var buttonCell = dgv[e.ColumnIndex, e.RowIndex];
-                if (buttonCell.Value as string == "Старт") StartAsync(e.RowIndex);
-                else Stop(e.RowIndex);
+                switch(e.ColumnIndex)
+                {
+                    case 2:
+                        if (dgv[e.ColumnIndex, e.RowIndex].Value as string == "Старт") StartAsync(e.RowIndex);
+                        else Stop(e.RowIndex);
+                        break;
+                    case 4:
+                        var form = new FormMsgConf();
+                        form.Icon = Icon;
+                        form.Text = "Настройка сообщений для " + dgv["name", e.RowIndex].Value;
+                        form.Show();
+                        break;
+                }
             }
         }
 
@@ -161,7 +176,7 @@ namespace AutoCheckin
             }
         }
 
-        async void StartAsync(int rowIndex) // TODO: Получать ФИО
+        async void StartAsync(int rowIndex)
         {
             var button = dgv["button", rowIndex];
             button.Value = "Стоп";
@@ -204,12 +219,17 @@ namespace AutoCheckin
             students.RemoveAll(x => x.Cookie == dgv["cookie", e.Row.Index].Value as string);
         }
 
-        private void dgv_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        private void timer2_Tick(object sender, EventArgs e)
         {
-            for(int i = e.RowIndex; i < dgv.RowCount - 1; i++)
+            foreach(Student student in students)
             {
-                dgv["button", i].Value = "Старт";
+                student.GetScheduleAsync();
             }
+        }
+
+        private void dgv_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            dgv["button", e.Row.Index - 1].Value = "Старт";
         }
     }
 }

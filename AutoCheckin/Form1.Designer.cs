@@ -34,12 +34,14 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_ver = new System.Windows.Forms.Label();
             this.dgv = new System.Windows.Forms.DataGridView();
+            this.button_stopAll = new System.Windows.Forms.Button();
+            this.button_startAll = new System.Windows.Forms.Button();
             this.cookie = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button = new System.Windows.Forms.DataGridViewButtonColumn();
             this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button_stopAll = new System.Windows.Forms.Button();
-            this.button_startAll = new System.Windows.Forms.Button();
+            this.rules = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,43 +76,15 @@
             this.cookie,
             this.name,
             this.button,
-            this.status});
+            this.status,
+            this.rules});
             this.dgv.Location = new System.Drawing.Point(12, 12);
             this.dgv.Name = "dgv";
-            this.dgv.Size = new System.Drawing.Size(452, 150);
+            this.dgv.Size = new System.Drawing.Size(575, 150);
             this.dgv.TabIndex = 5;
             this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
-            this.dgv.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgv_RowsAdded);
+            this.dgv.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserAddedRow);
             this.dgv.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserDeletedRow);
-            // 
-            // cookie
-            // 
-            this.cookie.HeaderText = ".AspNet.ApplicationCookie";
-            this.cookie.Name = "cookie";
-            this.cookie.Width = 150;
-            // 
-            // name
-            // 
-            this.name.HeaderText = "ФИО";
-            this.name.Name = "name";
-            this.name.ReadOnly = true;
-            this.name.Width = 113;
-            // 
-            // button
-            // 
-            this.button.HeaderText = "Старт";
-            this.button.Name = "button";
-            this.button.Text = "";
-            this.button.Width = 63;
-            // 
-            // status
-            // 
-            this.status.HeaderText = "Статус";
-            this.status.Name = "status";
-            this.status.ReadOnly = true;
-            this.status.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.status.Width = 65;
             // 
             // button_stopAll
             // 
@@ -132,11 +106,54 @@
             this.button_startAll.UseVisualStyleBackColor = true;
             this.button_startAll.Click += new System.EventHandler(this.button_startAll_Click);
             // 
+            // cookie
+            // 
+            this.cookie.HeaderText = ".AspNet.ApplicationCookie";
+            this.cookie.Name = "cookie";
+            this.cookie.Width = 150;
+            // 
+            // name
+            // 
+            this.name.HeaderText = "ФИО";
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            this.name.Width = 150;
+            // 
+            // button
+            // 
+            this.button.HeaderText = "Старт";
+            this.button.Name = "button";
+            this.button.Text = "";
+            this.button.Width = 63;
+            // 
+            // status
+            // 
+            this.status.HeaderText = "Статус";
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
+            this.status.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.status.Width = 70;
+            // 
+            // rules
+            // 
+            this.rules.HeaderText = "Сообщения";
+            this.rules.Name = "rules";
+            this.rules.Text = "Настроить";
+            this.rules.UseColumnTextForButtonValue = true;
+            this.rules.Width = 80;
+            // 
+            // timer2
+            // 
+            this.timer2.Enabled = true;
+            this.timer2.Interval = 43200000;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(476, 213);
+            this.ClientSize = new System.Drawing.Size(599, 213);
             this.Controls.Add(this.button_startAll);
             this.Controls.Add(this.button_stopAll);
             this.Controls.Add(this.dgv);
@@ -167,6 +184,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewButtonColumn button;
         private System.Windows.Forms.DataGridViewTextBoxColumn status;
+        private System.Windows.Forms.DataGridViewButtonColumn rules;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 
