@@ -8,6 +8,7 @@ namespace AutoCheckin
     public class Student
     {
         public Schedule Schedule { get; set; }
+        public UserInfo UserInfo { get; set; }
         public string Cookie { get; set; }
         public WebClient WebClient { get; private set; }
 
@@ -54,6 +55,12 @@ namespace AutoCheckin
             string name = resp.FindSubstring("<p class=\"navbar-nav ml-auto\">", "</p>").Decode();
             if (name != "-1") notifyIcon.ShowBalloonTip(1000, "Autocheckin", $"{name} посетил пару №{current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
             else throw new Exception();
+        }
+
+        public void GetUserInfo()
+        {
+            string resp = WebClient.DownloadString("https://stud.kubsau.ru/Home/GetUserInfo");
+            UserInfo = UserInfo.FromJson(resp.Decode());
         }
     }
 }

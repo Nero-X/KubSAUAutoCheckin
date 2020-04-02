@@ -63,7 +63,7 @@ namespace AutoCheckin
         {
             notifyIcon1.Visible = false;
             using (var sw = File.CreateText("cookies.txt"))
-                for(int i = 0; i < dgv.RowCount; i++)
+                for(int i = 0; i < dgv.RowCount - 1; i++)
                 {
                     sw.WriteLine(dgv["cookie", i].Value);
                 }
@@ -172,9 +172,11 @@ namespace AutoCheckin
                 await Task.Run(() =>
                 {
                     student.GetSchedule();
+                    student.GetUserInfo();
                     student.Checkin(notifyIcon1);
                 });
                 students.Add(student);
+                dgv["name", rowIndex].Value = student.UserInfo.Name;
                 SetStatus(rowIndex, Status.Посещение);
             }
             catch (WebException ex)
@@ -202,9 +204,12 @@ namespace AutoCheckin
             students.RemoveAll(x => x.Cookie == dgv["cookie", e.Row.Index].Value as string);
         }
 
-        private void dgv_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        private void dgv_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
-            dgv["button", e.Row.Index - 1].Value = "Старт";
+            for(int i = e.RowIndex; i < dgv.RowCount - 1; i++)
+            {
+                dgv["button", i].Value = "Старт";
+            }
         }
     }
 }

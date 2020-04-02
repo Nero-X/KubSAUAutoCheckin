@@ -39,4 +39,21 @@ namespace AutoCheckin
             return null;
         }
     }
+
+    public class UserInfo
+    {
+        public string FullName { get; set; }
+        public string GroupName { get; set; }
+
+        public string Name
+        {
+            get
+            {
+                string[] arr = FullName.Split(' ');
+                return $"{arr[0]} {arr[1][0]}. {arr[2][0]}. {GroupName}";
+            }
+        }
+
+        public static UserInfo FromJson(string json) => JsonConvert.DeserializeObject<UserInfo>(json);
+    }
 }

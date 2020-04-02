@@ -34,12 +34,12 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label_ver = new System.Windows.Forms.Label();
             this.dgv = new System.Windows.Forms.DataGridView();
-            this.button_stopAll = new System.Windows.Forms.Button();
-            this.button_startAll = new System.Windows.Forms.Button();
             this.cookie = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button = new System.Windows.Forms.DataGridViewButtonColumn();
             this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button_stopAll = new System.Windows.Forms.Button();
+            this.button_startAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,28 +80,8 @@
             this.dgv.Size = new System.Drawing.Size(452, 150);
             this.dgv.TabIndex = 5;
             this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
-            this.dgv.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserAddedRow);
+            this.dgv.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgv_RowsAdded);
             this.dgv.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dgv_UserDeletedRow);
-            // 
-            // button_stopAll
-            // 
-            this.button_stopAll.Location = new System.Drawing.Point(362, 178);
-            this.button_stopAll.Name = "button_stopAll";
-            this.button_stopAll.Size = new System.Drawing.Size(102, 23);
-            this.button_stopAll.TabIndex = 6;
-            this.button_stopAll.Text = "Остановить всех";
-            this.button_stopAll.UseVisualStyleBackColor = true;
-            this.button_stopAll.Click += new System.EventHandler(this.button_stopAll_Click);
-            // 
-            // button_startAll
-            // 
-            this.button_startAll.Location = new System.Drawing.Point(253, 178);
-            this.button_startAll.Name = "button_startAll";
-            this.button_startAll.Size = new System.Drawing.Size(103, 23);
-            this.button_startAll.TabIndex = 7;
-            this.button_startAll.Text = "Стартовать всех";
-            this.button_startAll.UseVisualStyleBackColor = true;
-            this.button_startAll.Click += new System.EventHandler(this.button_startAll_Click);
             // 
             // cookie
             // 
@@ -131,6 +111,26 @@
             this.status.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.status.Width = 65;
+            // 
+            // button_stopAll
+            // 
+            this.button_stopAll.Location = new System.Drawing.Point(362, 178);
+            this.button_stopAll.Name = "button_stopAll";
+            this.button_stopAll.Size = new System.Drawing.Size(102, 23);
+            this.button_stopAll.TabIndex = 6;
+            this.button_stopAll.Text = "Остановить всех";
+            this.button_stopAll.UseVisualStyleBackColor = true;
+            this.button_stopAll.Click += new System.EventHandler(this.button_stopAll_Click);
+            // 
+            // button_startAll
+            // 
+            this.button_startAll.Location = new System.Drawing.Point(253, 178);
+            this.button_startAll.Name = "button_startAll";
+            this.button_startAll.Size = new System.Drawing.Size(103, 23);
+            this.button_startAll.TabIndex = 7;
+            this.button_startAll.Text = "Стартовать всех";
+            this.button_startAll.UseVisualStyleBackColor = true;
+            this.button_startAll.Click += new System.EventHandler(this.button_startAll_Click);
             // 
             // Form1
             // 
