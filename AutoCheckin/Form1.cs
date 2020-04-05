@@ -20,8 +20,6 @@ namespace AutoCheckin
             label_ver.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString(2);
         }
 
-        List<Student> students = new List<Student>();
-
         enum Status
         {
             Пусто,
@@ -34,14 +32,14 @@ namespace AutoCheckin
         private void Form1_Load(object sender, EventArgs e)
         {
             AutoUpdate();
-            if (File.Exists("cookies.txt"))
+            /*if (File.Exists("cookies.txt"))
             {
                 using (var sr = File.OpenText("cookies.txt"))
                     while (sr.EndOfStream == false)
                     {
                         dgv.Rows.Add(sr.ReadLine(), "", "Старт");
                     }
-            }
+            }*/
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -72,13 +70,13 @@ namespace AutoCheckin
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            foreach(var student in students)
+            foreach(Student student in studentBS)
             {
                 CheckinAsync(student);
             }
         }
 
-        async void CheckinAsync(Student student) // TODO: Сообщения преподавателям
+        async void CheckinAsync(Student student)
         {
             var rowIndex = ToDGVRowIndex(student);
             SetStatus(rowIndex, Status.Загрузка);
@@ -95,7 +93,7 @@ namespace AutoCheckin
             catch (Exception)
             {
                 dgv["button", rowIndex].Value = "Старт";
-                students.Remove(student);
+                studentBS.Remove(student);
                 SetStatus(rowIndex, Status.Ошибка, "Неправильно введены или истёк срок действия куки");
             }
         }
@@ -151,7 +149,7 @@ namespace AutoCheckin
                         else Stop(e.RowIndex);
                         break;
                     case 4:
-                        var form = new FormMsgConf();
+                        var form = new FormMsgConf(studentBS[e.RowIndex] as Student);
                         form.Icon = Icon;
                         form.Text = "Настройка сообщений для " + dgv["name", e.RowIndex].Value;
                         form.Show();
@@ -164,7 +162,7 @@ namespace AutoCheckin
         {
             foreach(DataGridViewRow row in dgv.Rows)
             {
-                if(row.Cells["button"].Value as string == "Старт") StartAsync(row.Index);
+                if(row.Cells["buttonStart"].Value as string == "Старт") StartAsync(row.Index);
             }
         }
 
@@ -172,16 +170,16 @@ namespace AutoCheckin
         {
             foreach (DataGridViewRow row in dgv.Rows)
             {
-                if (row.Cells["button"].Value as string == "Стоп") Stop(row.Index);
+                if (row.Cells["buttonStart"].Value as string == "Стоп") Stop(row.Index);
             }
         }
 
         async void StartAsync(int rowIndex)
         {
-            var button = dgv["button", rowIndex];
+            var button = dgv["buttonStart", rowIndex];
             button.Value = "Стоп";
             SetStatus(rowIndex, Status.Загрузка);
-            Student student = new Student(dgv[0, rowIndex].Value as string);
+            var student = studentBS[rowIndex] as Student;
             try
             {
                 await Task.Run(() =>
@@ -190,15 +188,14 @@ namespace AutoCheckin
                     student.GetUserInfo();
                     student.Checkin(notifyIcon1);
                 });
-                students.Add(student);
-                dgv["name", rowIndex].Value = student.UserInfo.Name;
+                //dgv["name", rowIndex].Value = student.UserInfo.Name;
                 SetStatus(rowIndex, Status.Посещение);
             }
             catch (WebException ex)
             {
                 HttpWebResponse resp = (HttpWebResponse)ex.Response;
                 SetStatus(rowIndex, Status.Ошибка, resp.StatusDescription);
-                students.Add(student);
+                studentBS.Add(student);
             }
             catch (Exception)
             {
@@ -209,19 +206,19 @@ namespace AutoCheckin
 
         void Stop(int rowIndex)
         {
-            dgv["button", rowIndex].Value = "Старт";
-            students.RemoveAll(x => x.Cookie == dgv["cookie", rowIndex].Value as string);
+            dgv["buttonStart", rowIndex].Value = "Старт";
+            //studentBS.RemoveAll(x => x.Cookie == dgv["cookie", rowIndex].Value as string);
             SetStatus(rowIndex, Status.Пусто);
         }
 
         private void dgv_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
         {
-            students.RemoveAll(x => x.Cookie == dgv["cookie", e.Row.Index].Value as string);
+            //students.RemoveAll(x => x.Cookie == dgv["cookie", e.Row.Index].Value as string);
         }
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            foreach(Student student in students)
+            foreach(Student student in studentBS)
             {
                 student.GetScheduleAsync();
             }
@@ -229,7 +226,7 @@ namespace AutoCheckin
 
         private void dgv_UserAddedRow(object sender, DataGridViewRowEventArgs e)
         {
-            dgv["button", e.Row.Index - 1].Value = "Старт";
+            dgv["buttonStart", e.Row.Index - 1].Value = "Старт";
         }
     }
 }

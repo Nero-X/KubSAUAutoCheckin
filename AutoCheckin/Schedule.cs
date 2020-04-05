@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace AutoCheckin
 {
@@ -11,18 +12,41 @@ namespace AutoCheckin
 
         public Day Today => Days.Find(x => x.IsToday);
 
+        public Dictionary<string, List<string>> Dictionary
+        {
+            get
+            {
+                var dict = new Dictionary<string, List<string>>();
+                foreach (Day day in Days)
+                {
+                    foreach (Pair pair in day.Pairs)
+                    {
+                        if(pair.DisciplineName != "")
+                        {
+                            if (dict.ContainsKey(pair.DisciplineName)) dict[pair.DisciplineName] = dict[pair.DisciplineName].Union(pair.Employees).ToList();
+                            else dict[pair.DisciplineName] = pair.Employees;
+                        }
+                    }
+                }
+                return dict;
+            }
+        }
+
         public static Schedule FromJson(string json) => JsonConvert.DeserializeObject<Schedule>(json);
     }
 
     public class Pair
     {
         public string DisciplineName { get; set; }
+        public string EmployeesAuditoriums { get; set; }
         public int LessonNumber { get; set; }
         private DateTime start;
         private DateTime end;
         public DateTime CheckinDateStart { get => start; set => start = value.ToLocalTime(); }
         public DateTime CheckinDateEnd { get => end; set => end = value.ToLocalTime(); }
         public bool CheckedAtLesson { get; set; }
+
+        public List<string> Employees => EmployeesAuditoriums.Split(',').Select(x => x.Split('(')[0].Trim()).ToList();
     }
 
     public class Day

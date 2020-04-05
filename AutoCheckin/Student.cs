@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Web;
 using System.Windows.Forms;
@@ -10,14 +11,25 @@ namespace AutoCheckin
         public Schedule Schedule { get; set; }
         public UserInfo UserInfo { get; set; }
         public string Cookie { get; set; }
-        public WebClient WebClient { get; private set; }
-
-        public Student(string cookie)
+        private WebClient webClient;
+        public WebClient WebClient
         {
-            Cookie = cookie;
-            WebClient = new WebClient();
-            WebClient.Headers.Add(HttpRequestHeader.Cookie, ".AspNet.ApplicationCookie=" + Cookie);
+            get
+            {
+                if(webClient == null)
+                {
+                    webClient = new WebClient();
+                    webClient.Headers.Add(HttpRequestHeader.Cookie, ".AspNet.ApplicationCookie=" + Cookie);
+                }
+                return webClient;
+            }
         }
+        public Dictionary<string, string> MessagesRules { get; set; }
+        public bool SendingMessagesEnabled { get; set; }
+
+        public string Name => UserInfo?.Name;
+
+        public Student() { }
 
         public void GetSchedule()
         {
@@ -61,6 +73,17 @@ namespace AutoCheckin
         {
             string resp = WebClient.DownloadString("https://stud.kubsau.ru/Home/GetUserInfo");
             UserInfo = UserInfo.FromJson(resp.Decode());
+        }
+
+        public Schedule GetFullSchedule()
+        {
+            WebClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+            string resp = WebClient.UploadString("https://stud.kubsau.ru/Schedule/GetSchedule", "week=" + 1);
+            Schedule schedule = Schedule.FromJson(resp.Decode());
+            WebClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+            resp = WebClient.UploadString("https://stud.kubsau.ru/Schedule/GetSchedule", "week=" + 2);
+            schedule.Days.AddRange(Schedule.FromJson(resp.Decode()).Days);
+            return schedule;
         }
     }
 }
