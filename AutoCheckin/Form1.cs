@@ -99,7 +99,7 @@ namespace AutoCheckin
                 Pair current = schedule.model[0].GetCurrentPair();
                 if (current == null) return;
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-                string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", $"disciplineName={HttpUtility.UrlEncode(current.DisciplineName)}&classNumber=" + current.LessonNumber);
+                string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", "classNumber=" + current.LessonNumber);
                 string name = Decode(FindSubstring(resp, "<p class=\"navbar-nav ml-auto\">", "</p>"));
                 if (name != "-1") notifyIcon1.ShowBalloonTip(1000, this.Text, $"{name} посетил пару №{ current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
                 else MessageBox.Show("Проверьте куки", "Ошибка");
