@@ -96,7 +96,7 @@ namespace AutoCheckin
         {
             try
             {
-                Pair current = schedule.model[0].GetCurrentPair();
+                Pair current = schedule.Today?.GetCurrentPair();
                 if (current == null) return;
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
                 string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", "classNumber=" + current.LessonNumber);
@@ -161,6 +161,7 @@ namespace AutoCheckin
     public class Model
     {
         public List<Pair> Pairs { get; set; }
+        public bool IsToday { get; set; }
 
         public Pair GetCurrentPair()
         {
@@ -175,6 +176,8 @@ namespace AutoCheckin
     public class Schedule
     {
         public List<Model> model { get; set; }
+
+        public Model Today => model.Find(x => x.IsToday);
     }
     #endregion
 }
