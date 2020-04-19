@@ -40,10 +40,12 @@ namespace AutoCheckin
 
                 button_Start.Enabled = false;
                 client.Headers.Add(HttpRequestHeader.Cookie, ".AspNet.ApplicationCookie=" + textBox_Cookie.Text);
-                int week;
+                string resp;
+                Info info;
                 try
                 {
-                    week = Convert.ToInt32(client.UploadString("https://stud.kubsau.ru/Home/GetCurrentWeekNumber", "").Substring(8, 1));
+                    resp = client.UploadString("https://stud.kubsau.ru/Home/GetScheduleCommonInfo", "");
+                    info = JsonConvert.DeserializeObject<Info>(resp);
                 }
                 catch (Exception ex)
                 {
@@ -52,7 +54,7 @@ namespace AutoCheckin
                     return;
                 }
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-                string resp = client.UploadString("https://stud.kubsau.ru/Home/GetSchedule", "week=" + week);
+                resp = client.DownloadString($"https://stud.kubsau.ru/Home/GetSchedule?week={info.Week}&groupId={info.PersonGroups[0].Key}");
                 schedule = JsonConvert.DeserializeObject<Schedule>(Decode(resp));
 
                 tryCheck();
@@ -96,22 +98,22 @@ namespace AutoCheckin
         {
             try
             {
-                Pair current = schedule.Today?.GetCurrentPair();
+                Lesson current = schedule.Today?.GetCurrentLesson();
                 if (current == null) return;
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-                string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", "classNumber=" + current.LessonNumber);
+                string resp = client.UploadString("https://stud.kubsau.ru/Home/Checkin", "lessonGuid=" + current.LessonGuid);
                 //string name = Decode(FindSubstring(resp, "<p class=\"navbar-nav ml-auto\">", "</p>"));
-                if (resp == "\"OK\"") notifyIcon1.ShowBalloonTip(1000, this.Text, $"Студент успешно посетил пару №{ current.LessonNumber}: \"{current.DisciplineName}\" в {DateTime.Now}", ToolTipIcon.None);
-                else MessageBox.Show("Проверьте куки", "Ошибка");
+                if (resp == "\"OK\"") notifyIcon1.ShowBalloonTip(1000, this.Text, $"Студент успешно посетил пару в {DateTime.Now}", ToolTipIcon.None);
+                else MessageBox.Show("Проверьте куки\n" + DateTime.Now, "Ошибка");
             }
             catch (WebException ex)
             {
                 HttpWebResponse resp = (HttpWebResponse)ex.Response;
-                MessageBox.Show(Convert.ToString((int)resp.StatusCode), resp.StatusDescription);
+                MessageBox.Show(Convert.ToString((int)resp.StatusCode) + "\n" + DateTime.Now, resp.StatusDescription);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, ex.Source);
+                MessageBox.Show(ex.Message + "\n" + DateTime.Now, ex.Source);
             }
         }
 
@@ -148,36 +150,48 @@ namespace AutoCheckin
     }
 
     #region JSON Parser classes
-    public class Pair
+    public partial class Info
     {
-        public string DisciplineName { get; set; }
-        public int LessonNumber { get; set; }
-        private DateTime start;
-        private DateTime end;
-        public DateTime CheckinDateStart { get => start; set => start = value.ToLocalTime(); }
-        public DateTime CheckinDateEnd { get => end; set => end = value.ToLocalTime(); }
+        public int Week { get; set; }
+        public PersonGroup[] PersonGroups { get; set; }
     }
 
-    public class Model
+    public partial class PersonGroup
     {
-        public List<Pair> Pairs { get; set; }
-        public bool IsToday { get; set; }
+        public int Key { get; set; }
+        public string Value { get; set; }
+    }
 
-        public Pair GetCurrentPair()
+    public partial class Schedule
+    {
+        public List<Day> Days { get; set; }
+
+        public Day Today => Days.Find(x => x.IsToday);
+    }
+
+    public partial class Day
+    {
+        public bool IsToday { get; set; }
+        public Lesson[] Lessons { get; set; }
+
+        public Lesson GetCurrentLesson()
         {
-            foreach (Pair pair in Pairs)
+            foreach (Lesson lesson in Lessons)
             {
-                if (pair.CheckinDateStart < DateTime.Now && pair.CheckinDateEnd > DateTime.Now) return pair;
+                if (lesson.StartTime < DateTime.Now && lesson.EndTime > DateTime.Now && !lesson.LessonGuid.Equals(Guid.Empty)) return lesson;
             }
             return null;
         }
     }
 
-    public class Schedule
+    public partial class Lesson
     {
-        public List<Model> model { get; set; }
-
-        public Model Today => model.Find(x => x.IsToday);
+        public Guid LessonGuid { get; set; }
+        private DateTime start;
+        private DateTime end;
+        public DateTime StartTime { get => start; set => start = value.ToLocalTime(); }
+        public DateTime EndTime { get => end; set => end = value.ToLocalTime(); }
+        public bool IsCheckedIn { get; set; }
     }
     #endregion
 }
