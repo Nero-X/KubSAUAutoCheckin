@@ -178,7 +178,8 @@ namespace AutoCheckin
         {
             foreach (Lesson lesson in Lessons)
             {
-                if (lesson.StartTime < DateTime.Now && lesson.EndTime > DateTime.Now && !lesson.LessonGuid.Equals(Guid.Empty)) return lesson;
+                if (lesson.StartTime.TimeOfDay < DateTime.Now.TimeOfDay && lesson.EndTime.TimeOfDay > DateTime.Now.TimeOfDay 
+                    && !lesson.LessonGuid.Equals(Guid.Empty)) return lesson;
             }
             return null;
         }
